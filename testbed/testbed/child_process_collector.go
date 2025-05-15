@@ -16,6 +16,7 @@ import (
 	"slices"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"syscall"
@@ -117,6 +118,17 @@ func WithEnvVar(k, v string) ChildProcessOption {
 }
 
 func (cp *childProcessCollector) PrepareConfig(t *testing.T, configStr string) (configCleanup func(), err error) {
+	if sp := strings.Split(t.Name(), "/"); len(sp) == 2 {
+		if strings.HasPrefix(sp[1], "Rotel") {
+			wrapperPath := os.Getenv("ROTEL_OTEL_WRAPPER")
+			if wrapperPath == "" {
+				panic("Can not find ROTEL_OTEL_WRAPPER")
+			}
+			cp.agentExePath = wrapperPath
+			cp.additionalEnv["ROTEL_PATH"] = os.Getenv("ROTEL_PATH")
+		}
+	}
+
 	configCleanup = func() {
 		// NoOp
 	}
