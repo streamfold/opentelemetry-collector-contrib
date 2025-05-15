@@ -186,7 +186,7 @@ func TestTraceNoBackend10kSPS(t *testing.T) {
 }
 
 func TestTrace1kSPSWithAttrs(t *testing.T) {
-	Scenario1kSPSWithAttrs(t, []string{}, []TestCase{
+	Scenario1kSPSWithAttrs(t, "", []string{}, []TestCase{
 		// No attributes.
 		{
 			attrCount:      0,
