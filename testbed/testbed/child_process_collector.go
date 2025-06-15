@@ -126,6 +126,13 @@ func (cp *childProcessCollector) PrepareConfig(t *testing.T, configStr string) (
 			}
 			cp.agentExePath = wrapperPath
 			cp.additionalEnv["ROTEL_PATH"] = os.Getenv("ROTEL_PATH")
+		} else if strings.HasPrefix(sp[1], "Fluentbit") {
+			wrapperPath := os.Getenv("FLUENTBIT_OTEL_WRAPPER")
+			if wrapperPath == "" {
+				panic("Can not find FLUENTBIT_OTEL_WRAPPER")
+			}
+			cp.agentExePath = wrapperPath
+			cp.additionalEnv["FLUENTBIT_PATH"] = os.Getenv("FLUENTBIT_PATH")
 		}
 	}
 

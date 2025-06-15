@@ -51,6 +51,24 @@ func TestRotelLog10kDPS(t *testing.T) {
 				ExpectedMaxRAM: 120,
 			},
 		},
+		{
+			name:     "Fluentbit-OTLP",
+			sender:   testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			resourceSpec: testbed.ResourceSpec{
+				ExpectedMaxCPU: 30,
+				ExpectedMaxRAM: 120,
+			},
+		},
+		{
+			name:     "Fluentbit-OTLP-HTTP",
+			sender:   testbed.NewOTLPHTTPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
+			resourceSpec: testbed.ResourceSpec{
+				ExpectedMaxCPU: 30,
+				ExpectedMaxRAM: 120,
+			},
+		},
 	}
 
 	processors := []ProcessorNameAndConfigBody{
@@ -115,6 +133,24 @@ func TestRotelMetric10kDPS(t *testing.T) {
 		},
 		{
 			name:     "RotelOTLP-HTTP",
+			sender:   testbed.NewOTLPHTTPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
+			resourceSpec: testbed.ResourceSpec{
+				ExpectedMaxCPU: 60,
+				ExpectedMaxRAM: 100,
+			},
+		},
+		{
+			name:     "FluentbitOTLP",
+			sender:   testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			resourceSpec: testbed.ResourceSpec{
+				ExpectedMaxCPU: 60,
+				ExpectedMaxRAM: 105,
+			},
+		},
+		{
+			name:     "FluentbitOTLP-HTTP",
 			sender:   testbed.NewOTLPHTTPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
 			resourceSpec: testbed.ResourceSpec{
@@ -222,6 +258,42 @@ func TestRotelTrace10kSPS(t *testing.T) {
 				ExpectedMaxRAM: 100,
 			},
 		},
+		{
+			"Fluentbit-OTLP-gRPC",
+			testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			testbed.ResourceSpec{
+				ExpectedMaxCPU: 20,
+				ExpectedMaxRAM: 100,
+			},
+		},
+		{
+			"Fluentbit-OTLP-gRPC-gzip",
+			testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)).WithCompression("gzip"),
+			testbed.ResourceSpec{
+				ExpectedMaxCPU: 30,
+				ExpectedMaxRAM: 100,
+			},
+		},
+		{
+			"Fluentbit-OTLP-HTTP",
+			testbed.NewOTLPHTTPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t), ""),
+			testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
+			testbed.ResourceSpec{
+				ExpectedMaxCPU: 20,
+				ExpectedMaxRAM: 100,
+			},
+		},
+		{
+			"Fluentbit-OTLP-HTTP-gzip",
+			testbed.NewOTLPHTTPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t), "gzip"),
+			testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)).WithCompression("gzip"),
+			testbed.ResourceSpec{
+				ExpectedMaxCPU: 25,
+				ExpectedMaxRAM: 100,
+			},
+		},
 	}
 
 	processors := []ProcessorNameAndConfigBody{
@@ -250,7 +322,7 @@ func TestRotelTrace10kSPS(t *testing.T) {
 }
 
 func TestRotelTrace1kSPSWithAttrs(t *testing.T) {
-	for _, prefix := range []string{"", "Rotel-"} {
+	for _, prefix := range []string{"", "Rotel-", "Fluentbit-"} {
 		Scenario1kSPSWithAttrs(t, prefix, []string{}, []TestCase{
 			// No attributes.
 			{
