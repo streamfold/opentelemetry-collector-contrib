@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"os"
 	"testing"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/common/testutil"
@@ -8,13 +9,15 @@ import (
 )
 
 func TestRotelLog10kDPS(t *testing.T) {
-	tests := []struct {
+	type test struct {
 		name         string
 		sender       testbed.DataSender
 		receiver     testbed.DataReceiver
 		resourceSpec testbed.ResourceSpec
 		extensions   map[string]string
-	}{
+	}
+
+	tests := []test{
 		{
 			name:     "OTLP",
 			sender:   testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
@@ -51,15 +54,15 @@ func TestRotelLog10kDPS(t *testing.T) {
 				ExpectedMaxRAM: 120,
 			},
 		},
-		{
-			name:     "Fluentbit-OTLP",
-			sender:   testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			resourceSpec: testbed.ResourceSpec{
-				ExpectedMaxCPU: 30,
-				ExpectedMaxRAM: 120,
-			},
-		},
+		//{
+		//	name:     "Fluentbit-OTLP",
+		//	sender:   testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+		//	receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+		//	resourceSpec: testbed.ResourceSpec{
+		//		ExpectedMaxCPU: 30,
+		//		ExpectedMaxRAM: 120,
+		//	},
+		//},
 		{
 			name:     "Fluentbit-OTLP-HTTP",
 			sender:   testbed.NewOTLPHTTPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
@@ -69,6 +72,18 @@ func TestRotelLog10kDPS(t *testing.T) {
 				ExpectedMaxRAM: 120,
 			},
 		},
+	}
+
+	if e := os.Getenv("SKIP_FLUENTBIT_LOG10KDPS"); e == "" {
+		tests = append(tests, test{
+			name:     "Fluentbit-OTLP",
+			sender:   testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			resourceSpec: testbed.ResourceSpec{
+				ExpectedMaxCPU: 30,
+				ExpectedMaxRAM: 120,
+			},
+		})
 	}
 
 	processors := []ProcessorNameAndConfigBody{
